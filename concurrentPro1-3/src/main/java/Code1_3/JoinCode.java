@@ -2,7 +2,7 @@ package Code1_3;
 
 /**
  * @author xbhog
- * @describe:
+ * @describe: join函数测试2
  * @date 2022/7/7
  */
 public class JoinCode {
