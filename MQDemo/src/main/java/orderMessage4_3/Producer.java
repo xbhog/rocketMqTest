@@ -1,15 +1,11 @@
 package orderMessage4_3;
 
-import org.apache.rocketmq.client.exception.MQClientException;
 import org.apache.rocketmq.client.producer.DefaultMQProducer;
 import org.apache.rocketmq.client.producer.MessageQueueSelector;
 import org.apache.rocketmq.client.producer.SendResult;
 import org.apache.rocketmq.common.message.Message;
 import org.apache.rocketmq.common.message.MessageQueue;
 import pojo.OrderStep;
-
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 import java.util.List;
 
 /**
@@ -48,6 +44,7 @@ public class Producer {
                     long orderId = (long) o;
                     //取模，目的：相同的消息表示取模是一样的，区分是否在一个队列中
                     long l = orderId % list.size();
+                    System.out.println("订单ID："+orderId+",队列大小："+list.size()+",取模结果："+l);
                     return list.get((int) l);
                 }
             }, orderSteps.get(i).getOrderId());
