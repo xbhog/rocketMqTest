@@ -12,6 +12,8 @@
         <module>concurrentPro1-3</module>
         <module>FanXingDemo</module>
         <module>MQDemo</module>
+        <module>RocketMQProducer</module>
+        <module>RocketMQConsumer</module>
     </modules>
 
     <properties>

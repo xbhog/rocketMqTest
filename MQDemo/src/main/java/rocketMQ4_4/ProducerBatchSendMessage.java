@@ -7,7 +7,6 @@ import org.apache.rocketmq.client.producer.SendResult;
 import org.apache.rocketmq.common.message.Message;
 import org.apache.rocketmq.remoting.exception.RemotingException;
 
-import javax.xml.transform.Source;
 import java.util.ArrayList;
 import java.util.List;
 
