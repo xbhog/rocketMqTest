@@ -32,4 +32,5 @@ FanXingDemo
 
 1. Linux搭建zookeeper集群,搭建dubbo-admin管理平台
 2. 本地代码实现dubbo的提供者和消费者，联调整体架构代码
+3. 创建并初始化项目，调整maven层次依赖
 
