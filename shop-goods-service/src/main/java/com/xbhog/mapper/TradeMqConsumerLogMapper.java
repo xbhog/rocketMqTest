@@ -1,8 +1,9 @@
 package com.xbhog.mapper;
 
-import com.itheima.shop.pojo.TradeMqConsumerLog;
-import com.itheima.shop.pojo.TradeMqConsumerLogExample;
-import com.itheima.shop.pojo.TradeMqConsumerLogKey;
+
+import com.xbhog.shop.pojo.TradeMqConsumerLog;
+import com.xbhog.shop.pojo.TradeMqConsumerLogExample;
+import com.xbhog.shop.pojo.TradeMqConsumerLogKey;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 

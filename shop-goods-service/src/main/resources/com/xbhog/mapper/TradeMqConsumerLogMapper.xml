@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="com.itheima.shop.mapper.TradeMqConsumerLogMapper" >
-  <resultMap id="BaseResultMap" type="com.itheima.shop.pojo.TradeMqConsumerLog" >
+<mapper namespace="com.xbhog.mapper.TradeMqConsumerLogMapper" >
+  <resultMap id="BaseResultMap" type="com.xbhog.shop.pojo.TradeMqConsumerLog" >
     <id column="group_name" property="groupName" jdbcType="VARCHAR" />
     <id column="msg_tag" property="msgTag" jdbcType="VARCHAR" />
     <id column="msg_key" property="msgKey" jdbcType="VARCHAR" />
@@ -74,7 +74,7 @@
     group_name, msg_tag, msg_key, msg_id, msg_body, consumer_status, consumer_times, 
     consumer_timestamp, remark
   </sql>
-  <select id="selectByExample" resultMap="BaseResultMap" parameterType="com.itheima.shop.pojo.TradeMqConsumerLogExample" >
+  <select id="selectByExample" resultMap="BaseResultMap" parameterType="com.xbhog.shop.pojo.TradeMqConsumerLogExample" >
     select
     <if test="distinct" >
       distinct
@@ -88,7 +88,7 @@
       order by ${orderByClause}
     </if>
   </select>
-  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="com.itheima.shop.pojo.TradeMqConsumerLogKey" >
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="com.xbhog.shop.pojo.TradeMqConsumerLogKey" >
     select 
     <include refid="Base_Column_List" />
     from trade_mq_consumer_log
@@ -96,19 +96,19 @@
       and msg_tag = #{msgTag,jdbcType=VARCHAR}
       and msg_key = #{msgKey,jdbcType=VARCHAR}
   </select>
-  <delete id="deleteByPrimaryKey" parameterType="com.itheima.shop.pojo.TradeMqConsumerLogKey" >
+  <delete id="deleteByPrimaryKey" parameterType="com.xbhog.shop.pojo.TradeMqConsumerLogKey" >
     delete from trade_mq_consumer_log
     where group_name = #{groupName,jdbcType=VARCHAR}
       and msg_tag = #{msgTag,jdbcType=VARCHAR}
       and msg_key = #{msgKey,jdbcType=VARCHAR}
   </delete>
-  <delete id="deleteByExample" parameterType="com.itheima.shop.pojo.TradeMqConsumerLogExample" >
+  <delete id="deleteByExample" parameterType="com.xbhog.shop.pojo.TradeMqConsumerLogExample" >
     delete from trade_mq_consumer_log
     <if test="_parameter != null" >
       <include refid="Example_Where_Clause" />
     </if>
   </delete>
-  <insert id="insert" parameterType="com.itheima.shop.pojo.TradeMqConsumerLog" >
+  <insert id="insert" parameterType="com.xbhog.shop.pojo.TradeMqConsumerLog" >
     insert into trade_mq_consumer_log (group_name, msg_tag, msg_key, 
       msg_id, msg_body, consumer_status, 
       consumer_times, consumer_timestamp, remark
@@ -118,7 +118,7 @@
       #{consumerTimes,jdbcType=INTEGER}, #{consumerTimestamp,jdbcType=TIMESTAMP}, #{remark,jdbcType=VARCHAR}
       )
   </insert>
-  <insert id="insertSelective" parameterType="com.itheima.shop.pojo.TradeMqConsumerLog" >
+  <insert id="insertSelective" parameterType="com.xbhog.shop.pojo.TradeMqConsumerLog" >
     insert into trade_mq_consumer_log
     <trim prefix="(" suffix=")" suffixOverrides="," >
       <if test="groupName != null" >
@@ -179,7 +179,7 @@
       </if>
     </trim>
   </insert>
-  <select id="countByExample" parameterType="com.itheima.shop.pojo.TradeMqConsumerLogExample" resultType="java.lang.Integer" >
+  <select id="countByExample" parameterType="com.xbhog.shop.pojo.TradeMqConsumerLogExample" resultType="java.lang.Integer" >
     select count(*) from trade_mq_consumer_log
     <if test="_parameter != null" >
       <include refid="Example_Where_Clause" />
@@ -235,7 +235,7 @@
       <include refid="Update_By_Example_Where_Clause" />
     </if>
   </update>
-  <update id="updateByPrimaryKeySelective" parameterType="com.itheima.shop.pojo.TradeMqConsumerLog" >
+  <update id="updateByPrimaryKeySelective" parameterType="com.xbhog.shop.pojo.TradeMqConsumerLog" >
     update trade_mq_consumer_log
     <set >
       <if test="msgId != null" >
@@ -261,7 +261,7 @@
       and msg_tag = #{msgTag,jdbcType=VARCHAR}
       and msg_key = #{msgKey,jdbcType=VARCHAR}
   </update>
-  <update id="updateByPrimaryKey" parameterType="com.itheima.shop.pojo.TradeMqConsumerLog" >
+  <update id="updateByPrimaryKey" parameterType="com.xbhog.shop.pojo.TradeMqConsumerLog" >
     update trade_mq_consumer_log
     set msg_id = #{msgId,jdbcType=VARCHAR},
       msg_body = #{msgBody,jdbcType=VARCHAR},

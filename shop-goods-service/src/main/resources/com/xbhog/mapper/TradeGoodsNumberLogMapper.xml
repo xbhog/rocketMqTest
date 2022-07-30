@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="com.itheima.shop.mapper.TradeGoodsNumberLogMapper" >
-  <resultMap id="BaseResultMap" type="com.itheima.shop.pojo.TradeGoodsNumberLog" >
+<mapper namespace="com.xbhog.mapper.TradeGoodsNumberLogMapper" >
+  <resultMap id="BaseResultMap" type="com.xbhog.shop.pojo.TradeGoodsNumberLog" >
     <id column="goods_id" property="goodsId" jdbcType="BIGINT" />
     <id column="order_id" property="orderId" jdbcType="BIGINT" />
     <result column="goods_number" property="goodsNumber" jdbcType="INTEGER" />
@@ -68,7 +68,7 @@
   <sql id="Base_Column_List" >
     goods_id, order_id, goods_number, log_time
   </sql>
-  <select id="selectByExample" resultMap="BaseResultMap" parameterType="com.itheima.shop.pojo.TradeGoodsNumberLogExample" >
+  <select id="selectByExample" resultMap="BaseResultMap" parameterType="com.xbhog.shop.pojo.TradeGoodsNumberLogExample" >
     select
     <if test="distinct" >
       distinct
@@ -82,31 +82,31 @@
       order by ${orderByClause}
     </if>
   </select>
-  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="com.itheima.shop.pojo.TradeGoodsNumberLogKey" >
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="com.xbhog.shop.pojo.TradeGoodsNumberLogKey" >
     select 
     <include refid="Base_Column_List" />
     from trade_goods_number_log
     where goods_id = #{goodsId,jdbcType=BIGINT}
       and order_id = #{orderId,jdbcType=BIGINT}
   </select>
-  <delete id="deleteByPrimaryKey" parameterType="com.itheima.shop.pojo.TradeGoodsNumberLogKey" >
+  <delete id="deleteByPrimaryKey" parameterType="com.xbhog.shop.pojo.TradeGoodsNumberLogKey" >
     delete from trade_goods_number_log
     where goods_id = #{goodsId,jdbcType=BIGINT}
       and order_id = #{orderId,jdbcType=BIGINT}
   </delete>
-  <delete id="deleteByExample" parameterType="com.itheima.shop.pojo.TradeGoodsNumberLogExample" >
+  <delete id="deleteByExample" parameterType="com.xbhog.shop.pojo.TradeGoodsNumberLogExample" >
     delete from trade_goods_number_log
     <if test="_parameter != null" >
       <include refid="Example_Where_Clause" />
     </if>
   </delete>
-  <insert id="insert" parameterType="com.itheima.shop.pojo.TradeGoodsNumberLog" >
+  <insert id="insert" parameterType="com.xbhog.shop.pojo.TradeGoodsNumberLog" >
     insert into trade_goods_number_log (goods_id, order_id, goods_number, 
       log_time)
     values (#{goodsId,jdbcType=BIGINT}, #{orderId,jdbcType=BIGINT}, #{goodsNumber,jdbcType=INTEGER}, 
       #{logTime,jdbcType=TIMESTAMP})
   </insert>
-  <insert id="insertSelective" parameterType="com.itheima.shop.pojo.TradeGoodsNumberLog" >
+  <insert id="insertSelective" parameterType="com.xbhog.shop.pojo.TradeGoodsNumberLog" >
     insert into trade_goods_number_log
     <trim prefix="(" suffix=")" suffixOverrides="," >
       <if test="goodsId != null" >
@@ -137,7 +137,7 @@
       </if>
     </trim>
   </insert>
-  <select id="countByExample" parameterType="com.itheima.shop.pojo.TradeGoodsNumberLogExample" resultType="java.lang.Integer" >
+  <select id="countByExample" parameterType="com.xbhog.shop.pojo.TradeGoodsNumberLogExample" resultType="java.lang.Integer" >
     select count(*) from trade_goods_number_log
     <if test="_parameter != null" >
       <include refid="Example_Where_Clause" />
@@ -173,7 +173,7 @@
       <include refid="Update_By_Example_Where_Clause" />
     </if>
   </update>
-  <update id="updateByPrimaryKeySelective" parameterType="com.itheima.shop.pojo.TradeGoodsNumberLog" >
+  <update id="updateByPrimaryKeySelective" parameterType="com.xbhog.shop.pojo.TradeGoodsNumberLog" >
     update trade_goods_number_log
     <set >
       <if test="goodsNumber != null" >
@@ -186,7 +186,7 @@
     where goods_id = #{goodsId,jdbcType=BIGINT}
       and order_id = #{orderId,jdbcType=BIGINT}
   </update>
-  <update id="updateByPrimaryKey" parameterType="com.itheima.shop.pojo.TradeGoodsNumberLog" >
+  <update id="updateByPrimaryKey" parameterType="com.xbhog.shop.pojo.TradeGoodsNumberLog" >
     update trade_goods_number_log
     set goods_number = #{goodsNumber,jdbcType=INTEGER},
       log_time = #{logTime,jdbcType=TIMESTAMP}

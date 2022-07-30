@@ -1,8 +1,9 @@
 package com.xbhog.mapper;
 
-import com.itheima.shop.pojo.TradeGoodsNumberLog;
-import com.itheima.shop.pojo.TradeGoodsNumberLogExample;
-import com.itheima.shop.pojo.TradeGoodsNumberLogKey;
+
+import com.xbhog.shop.pojo.TradeGoodsNumberLog;
+import com.xbhog.shop.pojo.TradeGoodsNumberLogExample;
+import com.xbhog.shop.pojo.TradeGoodsNumberLogKey;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
