@@ -10,17 +10,16 @@ import com.xbhog.constant.ShopCode;
 import com.xbhog.exception.CastException;
 import com.xbhog.mapper.TradeOrderMapper;
 import com.xbhog.shop.entity.Result;
-import com.xbhog.shop.pojo.TradeCoupon;
-import com.xbhog.shop.pojo.TradeGoods;
-import com.xbhog.shop.pojo.TradeOrder;
-import com.xbhog.shop.pojo.TradeUser;
+import com.xbhog.shop.pojo.*;
 import com.xbhog.utils.IDWorker;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
+import java.sql.ResultSet;
 import java.util.Date;
 
 /**
@@ -56,13 +55,13 @@ public class OrderServiceImpl implements IorderService {
         //使用try保证3-7过程的原子性
         try {
             //3.扣减库存
-
+            reduceGoodNum(order);
             //4.扣减优惠券
-
-            //5.使用余额
-
+            updateCoupStatus(order);
+            //5.扣减余额
+            updateMoneyPaid(order);
             //6.确认订单
-
+            updateOrderStatus(order);
             //7.返回成功状态
 
         } catch (Exception e) {
@@ -71,6 +70,78 @@ public class OrderServiceImpl implements IorderService {
             //2.返回失败状态
         }
         return null;
+    }
+
+    /**
+     * 确认订单：修改订单状态(不可见变为可见)
+     * @param order
+     */
+    private void updateOrderStatus(TradeOrder order) {
+        order.setOrderStatus(ShopCode.SHOP_ORDER_CONFIRM.getCode());
+        order.setPayStatus(ShopCode.SHOP_ORDER_PAY_STATUS_NO_PAY.getCode());
+        order.setConfirmTime(new Date());
+        int r = orderMapper.updateByPrimaryKey(order);
+        if(r <= 0){
+            //订单确认失败
+            CastException.cast(ShopCode.SHOP_ORDER_CONFIRM_FAIL);
+        }
+        log.info("订单{}状态修改成功",order.getOrderId());
+    }
+
+    /**
+     * 扣减余额
+     * @param order
+     */
+    private void updateMoneyPaid(TradeOrder order) {
+        if(order.getMoneyPaid()!=null && order.getMoneyPaid().compareTo(BigDecimal.ZERO)==1){
+            //用户余额日志
+            TradeUserMoneyLog userMoneyLog = new TradeUserMoneyLog();
+            BeanUtils.copyProperties(order,userMoneyLog);
+            //付款状态
+            userMoneyLog.setMoneyLogType(ShopCode.SHOP_USER_MONEY_PAID.getCode());
+            //扣除余额
+            Result result = userService.changeUserMoney(userMoneyLog);
+            if (result.getSuccess().equals(ShopCode.SHOP_FAIL.getSuccess())) {
+                CastException.cast(ShopCode.SHOP_USER_MONEY_REDUCE_FAIL);
+            }
+            log.info("订单:["+order.getOrderId()+"扣减余额["+order.getMoneyPaid()+"元]成功]");
+        }
+    }
+
+    /**
+     * 扣减优惠卷
+     * @param order
+     */
+    private void updateCoupStatus(TradeOrder order) {
+        if(order.getCouponId()!=null){
+            TradeCoupon coupon = couponService.findOne(order.getCouponId());
+            coupon.setOrderId(order.getOrderId());
+            coupon.setIsUsed(ShopCode.SHOP_COUPON_ISUSED.getCode());
+            coupon.setUsedTime(new Date());
+
+            //更新优惠券状态
+            Result result =  couponService.updateCouponStatus(coupon);
+            if(result.getSuccess().equals(ShopCode.SHOP_FAIL.getSuccess())){
+                CastException.cast(ShopCode.SHOP_COUPON_USE_FAIL);
+            }
+            log.info("订单:{},使用优惠券",order.getOrderId());
+        }
+
+    }
+
+    /**
+     * 扣减库存
+     * @param order
+     */
+    private void reduceGoodNum(TradeOrder order) {
+        //商品数量日志
+        TradeGoodsNumberLog numberLog = new TradeGoodsNumberLog();
+        BeanUtils.copyProperties(order,numberLog);
+        Result result = goodsService.reduceGoodsNum(numberLog);
+        if(result.getSuccess().equals(ShopCode.SHOP_FAIL.getSuccess())){
+            CastException.cast(ShopCode.SHOP_USER_MONEY_REDUCE_FAIL);
+        }
+        log.info("订单：{}扣减库存成功",order.getOrderId());
     }
 
     /**
