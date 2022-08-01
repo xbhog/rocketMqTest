@@ -2,21 +2,26 @@ package com.xbhog.service.impl;
 
 import com.alibaba.dubbo.config.annotation.Reference;
 import com.alibaba.dubbo.config.annotation.Service;
+import com.xbhog.api.ICouponService;
 import com.xbhog.api.IGoodsService;
 import com.xbhog.api.IUserService;
 import com.xbhog.api.IorderService;
 import com.xbhog.constant.ShopCode;
 import com.xbhog.exception.CastException;
+import com.xbhog.mapper.TradeOrderMapper;
 import com.xbhog.shop.entity.Result;
+import com.xbhog.shop.pojo.TradeCoupon;
 import com.xbhog.shop.pojo.TradeGoods;
 import com.xbhog.shop.pojo.TradeOrder;
 import com.xbhog.shop.pojo.TradeUser;
+import com.xbhog.utils.IDWorker;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
+import java.util.Date;
 
 /**
  * @author xbhog
@@ -33,11 +38,21 @@ public class OrderServiceImpl implements IorderService {
     @Reference
     private IUserService userService;
 
+    @Reference
+    private IDWorker idWorker;
+
+    @Reference
+    private ICouponService couponService;
+
+    @Autowired
+    private TradeOrderMapper orderMapper;
+
     @Override
     public Result confirmOrder(TradeOrder order) {
         //1.校验订单
         checkOrder(order);
         //2.生成预订单
+        Long orderId = savePreOrder(order);
         //使用try保证3-7过程的原子性
         try {
             //3.扣减库存
@@ -59,6 +74,88 @@ public class OrderServiceImpl implements IorderService {
     }
 
     /**
+     * 生成预订单
+     * @param order
+     * @return
+     */
+    private Long savePreOrder(TradeOrder order) {
+        //设置订单状态不可见(订单未确认)
+        order.setOrderStatus(ShopCode.SHOP_ORDER_NO_CONFIRM.getCode());
+        //设置订单Id
+        long orderId = idWorker.nextId();
+        order.setOrderId(orderId);
+        //核算运费是否正确
+        BigDecimal shippingFee = calculateShippingFee(order.getOrderAmount());
+        if(order.getShippingFee().compareTo(shippingFee) != 0){
+            //订单运费不正确
+            CastException.cast(ShopCode.SHOP_ORDER_SHIPPINGFEE_INVALID);
+        }
+        //核算订单总价是否正确
+        BigDecimal orderAmount = order.getGoodsPrice().multiply(BigDecimal.valueOf(order.getGoodsNumber()));
+        orderAmount.add(shippingFee);
+        if(order.getOrderAmount().compareTo(orderAmount) != 0){
+            //订单总金额与实际不匹配，报订单无效
+            CastException.cast(ShopCode.SHOP_ORDER_INVALID);
+        }
+        //判断优惠卷是否合法
+        Long couponId = order.getCouponId();
+        if(couponId != null){
+            TradeCoupon coupon = couponService.findOne(couponId);
+            //判断优惠卷存不存在
+            if(coupon == null){
+                CastException.cast(ShopCode.SHOP_COUPON_NO_EXIST);
+            }
+            //是否过期
+            if(coupon.getIsUsed().intValue() ==ShopCode.SHOP_COUPON_ISUSED.getCode().intValue()){
+                CastException.cast(ShopCode.SHOP_COUPON_ISUSED);
+            }
+            //设置优惠卷
+            order.setCouponPaid(coupon.getCouponPrice());
+        }else{
+            order.setCouponPaid(BigDecimal.ZERO);
+        }
+        //判断余额是否合法
+        BigDecimal moneyPaid = order.getMoneyPaid();
+        if(moneyPaid != null){
+            int r = moneyPaid.compareTo(BigDecimal.ZERO);
+            //余额小于0
+            if(r == -1){
+                CastException.cast(ShopCode.SHOP_MONEY_PAID_LESS_ZERO);
+            }
+            //余额大于0
+            if(r == 1){
+                TradeUser user = userService.findOne(order.getUserId());
+                if(moneyPaid.compareTo(new BigDecimal(user.getUserMoney())) ==1){
+                    CastException.cast(ShopCode.SHOP_MONEY_PAID_INVALID);
+                }
+            }
+        }else{
+            order.setMoneyPaid(BigDecimal.ZERO);
+        }
+        //核算订单总价
+        BigDecimal payAmount = order.getOrderAmount().subtract(order.getMoneyPaid()).subtract(order.getCouponPaid());
+        order.setPayAmount(payAmount);
+        //设置订单时间
+        order.setAddTime(new Date());
+        //保存订单到数据库
+        orderMapper.insert(order);
+        //返回订单ID
+        return orderId;
+    }
+    //核算订单运费
+    private BigDecimal calculateShippingFee(BigDecimal orderAmount) {
+        //如果订单金额大于100，则免运费，否则运费为10
+        if(orderAmount.compareTo(
+                new BigDecimal(100)
+        ) ==1){
+            return BigDecimal.ZERO;
+        }else {
+            return new BigDecimal(10);
+        }
+
+    }
+
+    /**
      * 校验订单
      * @param order
      */
@@ -77,8 +174,8 @@ public class OrderServiceImpl implements IorderService {
         if(tradeUser == null){
             CastException.cast(ShopCode.SHOP_USER_IS_NULL);
         }
-        //4.校验订单金额是否合法
-        if(order.getOrderAmount().compareTo(goods.getGoodsPrice().multiply(BigDecimal.valueOf(order.getGoodsNumber()))) != 0){
+        //4.校验商品单价是否合法
+        if(order.getGoodsPrice().compareTo(goods.getGoodsPrice()) != 0){
             CastException.cast(ShopCode.SHOP_GOODS_PRICE_INVALID);
         }
         //5.校验订单商品数量是否合法(是否超过库存总量)
