@@ -33,3 +33,12 @@ FanXingDemo
 1. Linux搭建zookeeper集群,搭建dubbo-admin管理平台
 2. 本地代码实现dubbo的提供者和消费者，联调整体架构代码
 
+### 分支对应关系
+1. 创建并初始化项目：202207_file_commit
+2. 202207_initProject
+   1. 构建Mapper和xml对应文件以及添加各层次依赖；
+   2. 校验订单功能实现
+3. 20220801_pre_Order_commit
+   1. 预订单实现
+   2. 扣减库存实现
+   3. 更新优惠卷以及余额功能实现
