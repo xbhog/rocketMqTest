@@ -5,7 +5,7 @@ import com.alibaba.dubbo.config.annotation.Service;
 import com.xbhog.api.ICouponService;
 import com.xbhog.api.IGoodsService;
 import com.xbhog.api.IUserService;
-import com.xbhog.api.IorderService;
+import com.xbhog.api.IOrderService;
 import com.xbhog.constant.ShopCode;
 import com.xbhog.exception.CastException;
 import com.xbhog.mapper.TradeOrderMapper;
@@ -13,13 +13,11 @@ import com.xbhog.shop.entity.Result;
 import com.xbhog.shop.pojo.*;
 import com.xbhog.utils.IDWorker;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
-import java.sql.ResultSet;
 import java.util.Date;
 
 /**
@@ -29,8 +27,8 @@ import java.util.Date;
  */
 @Slf4j
 @Component
-@Service(interfaceClass = IorderService.class)
-public class OrderServiceImpl implements IorderService {
+@Service(interfaceClass = IOrderService.class)
+public class OrderServiceImpl implements IOrderService {
 
     @Reference
     private IGoodsService goodsService;

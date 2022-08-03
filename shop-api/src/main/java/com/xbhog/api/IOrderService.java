@@ -8,7 +8,7 @@ import com.xbhog.shop.pojo.TradeOrder;
  * @describe:订单接口
  * @date 2022/7/29
  */
-public interface IorderService {
+public interface IOrderService {
     /**
      * 确认订单
      * @param order
