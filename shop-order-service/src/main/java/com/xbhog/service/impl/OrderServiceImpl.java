@@ -35,7 +35,7 @@ public class OrderServiceImpl implements IOrderService {
     @Reference
     private IUserService userService;
 
-    @Reference
+    @Autowired
     private IDWorker idWorker;
 
     @Reference
@@ -248,7 +248,7 @@ public class OrderServiceImpl implements IOrderService {
             CastException.cast(ShopCode.SHOP_GOODS_PRICE_INVALID);
         }
         //5.校验订单商品数量是否合法(是否超过库存总量)
-        if(order.getGoodsNumber() <= goods.getGoodsNumber()){
+        if(order.getGoodsNumber() >= goods.getGoodsNumber()){
             CastException.cast(ShopCode.SHOP_GOODS_NUM_NOT_ENOUGH);
         }
         log.info("校验订单通过");
