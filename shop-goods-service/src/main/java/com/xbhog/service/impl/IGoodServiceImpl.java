@@ -50,6 +50,8 @@ public class IGoodServiceImpl implements IGoodsService {
             //库存不足
             CastException.cast(ShopCode.SHOP_GOODS_NUM_NOT_ENOUGH);
         }
+        //减库存
+        goods.setGoodsNumber(goods.getGoodsNumber()-numberLog.getGoodsNumber());
         tradeGoodsMapper.updateByPrimaryKey(goods);
         //记录库存操作日志
         numberLog.setGoodsNumber(-(numberLog.getGoodsNumber()));
