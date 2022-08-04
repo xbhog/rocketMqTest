@@ -2,6 +2,7 @@ package com.xbhog.service.impl;
 
 import com.alibaba.dubbo.config.annotation.Reference;
 import com.alibaba.dubbo.config.annotation.Service;
+import com.alibaba.fastjson.JSON;
 import com.xbhog.api.ICouponService;
 import com.xbhog.api.IGoodsService;
 import com.xbhog.api.IUserService;
@@ -9,12 +10,20 @@ import com.xbhog.api.IOrderService;
 import com.xbhog.constant.ShopCode;
 import com.xbhog.exception.CastException;
 import com.xbhog.mapper.TradeOrderMapper;
+import com.xbhog.shop.entity.MQEntity;
 import com.xbhog.shop.entity.Result;
 import com.xbhog.shop.pojo.*;
 import com.xbhog.utils.IDWorker;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.rocketmq.client.exception.MQBrokerException;
+import org.apache.rocketmq.client.exception.MQClientException;
+import org.apache.rocketmq.common.message.Message;
+import org.apache.rocketmq.remoting.exception.RemotingException;
+import org.apache.rocketmq.spring.core.RocketMQTemplate;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
@@ -44,6 +53,15 @@ public class OrderServiceImpl implements IOrderService {
     @Autowired
     private TradeOrderMapper orderMapper;
 
+    @Value("${mq.order.topic}")
+    private String topic;
+
+    @Value("${mq.order.tag.cancel}")
+    private String tag;
+
+    @Autowired
+    private RocketMQTemplate rocketMQTemplate;
+
     @Override
     public Result confirmOrder(TradeOrder order) {
         //1.校验订单
@@ -58,16 +76,47 @@ public class OrderServiceImpl implements IOrderService {
             updateCoupStatus(order);
             //5.扣减余额
             updateMoneyPaid(order);
+            CastException.cast(ShopCode.SHOP_MONEY_PAID_INVALID);
             //6.确认订单
             updateOrderStatus(order);
             //7.返回成功状态
+            log.info("购买成功");
 
         } catch (Exception e) {
+            log.info("======》进入异常");
             //1.确认订单失败,发送消息
-
+            MQEntity mq = new MQEntity();
+            BeanUtils.copyProperties(order,mq);
+            mq.setUserMoney(order.getMoneyPaid());
             //2.返回失败状态
+            try {
+                sendMessages(topic,tag,order.getOrderId().toString(), JSON.toJSONString(mq));
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+            return new Result(ShopCode.SHOP_FAIL.getSuccess(), ShopCode.SHOP_FAIL.getMessage());
         }
-        return null;
+        return  new Result(ShopCode.SHOP_SUCCESS.getSuccess(),ShopCode.SHOP_SUCCESS.getMessage());
+    }
+
+    /**
+     * 发送MQ消息
+     * @param topic 消息主题
+     * @param tag 消息标签
+     * @param key 标识
+     * @param mqBody 内容
+     */
+    private void sendMessages(String topic, String tag, String key, String mqBody) throws MQBrokerException, RemotingException, InterruptedException, MQClientException {
+        log.info("====>进入发送消息{}",topic);
+        if(StringUtils.isBlank(topic)){
+            CastException.cast(ShopCode.SHOP_MQ_TOPIC_IS_EMPTY);
+        }
+        if(StringUtils.isBlank(mqBody)){
+            CastException.cast(ShopCode.SHOP_MQ_MESSAGE_BODY_IS_EMPTY);
+        }
+        Message message = new Message(topic, tag, key, mqBody.getBytes());
+        rocketMQTemplate.getProducer().send(message);
+        log.info("发送成功{}",topic);
     }
 
     /**
