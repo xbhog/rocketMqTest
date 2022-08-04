@@ -94,7 +94,10 @@ public class OrderServiceImpl implements IOrderService {
         if(order.getMoneyPaid()!=null && order.getMoneyPaid().compareTo(BigDecimal.ZERO)==1){
             //用户余额日志
             TradeUserMoneyLog userMoneyLog = new TradeUserMoneyLog();
-            BeanUtils.copyProperties(order,userMoneyLog);
+            //BeanUtils.copyProperties(order,userMoneyLog);
+            userMoneyLog.setOrderId(order.getOrderId());
+            userMoneyLog.setUserId(order.getUserId());
+            userMoneyLog.setUseMoney(order.getMoneyPaid());
             //付款状态
             userMoneyLog.setMoneyLogType(ShopCode.SHOP_USER_MONEY_PAID.getCode());
             //扣除余额
