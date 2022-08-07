@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import java.io.IOException;
 import java.math.BigDecimal;
 
 /**
@@ -23,7 +24,7 @@ public class OrderServiceTest {
     private IOrderService orderService;
 
     @Test
-    public void confirmOrder(){
+    public void confirmOrder() throws IOException {
         Long coupouId = 345988230098857984L;
         Long goodsId = 345959443973935104L;
         Long userId = 345963634385633280L;
@@ -40,5 +41,6 @@ public class OrderServiceTest {
         tradeOrder.setOrderAmount(new BigDecimal(1000));
         tradeOrder.setMoneyPaid(new BigDecimal(100));
         orderService.confirmOrder(tradeOrder);
+        System.in.read();
     }
 }

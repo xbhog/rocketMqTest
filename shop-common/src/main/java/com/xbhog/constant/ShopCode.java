@@ -62,6 +62,8 @@ public enum ShopCode {
     SHOP_REDUCE_GOODS_NUM_FAIL(false, 20004, "扣减库存失败"),
     //库存记录为空
     SHOP_REDUCE_GOODS_NUM_EMPTY(false, 20005, "扣减库存失败"),
+    //商品数量和库存数量不同
+    SHOP_GOODS_NUM_IS_DIFFERENT(false, 20006, "商品和库存数量不同"),
     //用户账号不能为空
     SHOP_USER_IS_NULL(false, 30001, "用户账号不能为空"),
     //用户信息不存在

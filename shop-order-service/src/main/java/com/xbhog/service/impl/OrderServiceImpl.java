@@ -88,6 +88,7 @@ public class OrderServiceImpl implements IOrderService {
             MQEntity mq = new MQEntity();
             BeanUtils.copyProperties(order,mq);
             mq.setUserMoney(order.getMoneyPaid());
+            mq.setGoodsNum(order.getGoodsNumber());
             //2.返回失败状态
             try {
                 sendMessages(topic,tag,order.getOrderId().toString(), JSON.toJSONString(mq));
