@@ -105,7 +105,6 @@
         <module>../shop-goods-service</module>
         <module>../shop-order-service</module>
         <module>../shop-order-web</module>
-        <module>../shop-parent</module>
         <module>../shop-pay-service</module>
         <module>../shop-pay-web</module>
         <module>../shop-pojo</module>
